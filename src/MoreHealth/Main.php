@@ -21,87 +21,95 @@ class Main extends PluginBase implements Listener{
                 if(count($args) < 1 || count($args) > 3){
                     $sender->sendMessage(TextFormat::RED . $command->getUsage());
                 }else{
-                    switch(count($args)){
-                        case 1:
-                            if($args[0] == "set"){
-                                if(!$sender instanceof Player){
-                                    $sender->sendMessage(TextFormat::RED . "Please specify an amount and a player: /morehealth set <amount> <player>");
-                                }else{
-                                    $sender->sendMessage(TextFormat::RED . "Please specify an amount: /morehealth set <amount>");
-                                }
-                            }elseif($args[0] == "restore"){
-                                if(!$sender instanceof Player){
-                                    $sender->sendMessage(TextFormat::RED . "Please specify a player: /morehealth restore <player>");
-                                }else{
-                                    $this->setMaxHealth($sender, 20, true);
-                                    $sender->sendMessage(TextFormat::AQUA . "Your health has been restored to [20] points");
-                                }
-                            }else{
-                                $sender->sendMessage(TextFormat::RED . $command->getUsage());
-                            }
-                            return true;
-                            break;
-                        case 2:
-                            if($args[0] == "set"){
-                                $amount = $args[1];
-                                if(!$sender instanceof Player){
-                                    $sender->sendMessage(TextFormat::RED . "Please specify a player: /morehealth set <amount> <player>");
-                                }else{
-                                    if(!is_numeric($amount)){
-                                        $sender->sendMessage(TextFormat::YELLOW . "Invalid health amount, please use numbers");
+                    if(!$sender->hasPermission("morehealth.set") || !$sender->hasPermission("morehealth.restore")){
+                        $sender->sendMessage(TextFormat::RED . $command->getPermissionMessage());
+                    }else{
+                        switch(count($args)){
+                            case 1:
+                                if($args[0] == "set"){
+                                    if(!$sender instanceof Player){
+                                        $sender->sendMessage(TextFormat::RED . "Please specify an amount and a player: /morehealth set <amount> <player>");
                                     }else{
-                                        $this->setMaxHealth($sender, $amount, true);
-                                        $sender->sendMessage(TextFormat::AQUA . "You now have [$amount] points of health");
+                                        $sender->sendMessage(TextFormat::RED . "Please specify an amount: /morehealth set <amount>");
                                     }
-                                }
-                            }elseif($args[0] == "restore"){
-                                $player = $this->getPlayer($args[1]);
-                                if($player == false){
-                                    $sender->sendMessage(TextFormat::RED . "[Error] Can't find player $args[1]");
-                                }else{
-                                    $this->setMaxHealth($player, 20, true);
-                                    $player->sendMessage(TextFormat::AQUA . "Your health has been restored to [20] points");
-                                    if($player != $sender){
-                                        if(substr($args[0], -1, 1) == "s"){
-                                            $sender->sendMessage(TextFormat::AQUA . "$args[1]' health has been restored to [20] points");
-                                        }else{
-                                            $sender->sendMessage(TextFormat::AQUA . "$args[1]'s health has been restored to [20] points");
-                                        }
+                                }elseif($args[0] == "restore"){
+                                    if(!$sender instanceof Player){
+                                        $sender->sendMessage(TextFormat::RED . "Please specify a player: /morehealth restore <player>");
+                                    }else{
+                                        $this->setMaxHealth($sender, 20, true);
+                                        $sender->sendMessage(TextFormat::AQUA . "Your health has been restored to [20] points");
                                     }
-                                }
-                            }else{
-                                $sender->sendMessage(TextFormat::RED . $command->getUsage());
-                            }
-                            return true;
-                            break;
-                        case 3:
-                            if($args[0] == "set"){
-                                $amount = $args[1];
-                                $player = $this->getPlayer($args[2]);
-                                if(!$sender->hasPermission("morehealth.set.other")){
-                                    $sender->sendMessage(TextFormat::RED . $command->getPermissionMessage());
                                 }else{
-                                    if($player == false){
-                                        $sender->sendMessage(TextFormat::RED . "[Error] Can't find player $args[2]");
+                                    $sender->sendMessage(TextFormat::RED . $command->getUsage());
+                                }
+                                return true;
+                                break;
+                            case 2:
+                                if($args[0] == "set"){
+                                    $amount = $args[1];
+                                    if(!$sender instanceof Player){
+                                        $sender->sendMessage(TextFormat::RED . "Please specify a player: /morehealth set <amount> <player>");
                                     }else{
                                         if(!is_numeric($amount)){
                                             $sender->sendMessage(TextFormat::YELLOW . "Invalid health amount, please use numbers");
                                         }else{
-                                            $this->setMaxHealth($player, $amount, true);
-                                            $player->sendMessage(TextFormat::AQUA . "You now have [$amount] points of health");
+                                            $this->setMaxHealth($sender, $amount, true);
+                                            $sender->sendMessage(TextFormat::AQUA . "You now have [$amount] points of health");
+                                        }
+                                    }
+                                }elseif($args[0] == "restore"){
+                                    if(!$sender->hasPermission("morehealth.restore.other")){
+                                        $sender->sendMessage(TextFormat::RED . $command->getPermissionMessage());
+                                    }else{
+                                        $player = $this->getPlayer($args[1]);
+                                        if($player == false){
+                                            $sender->sendMessage(TextFormat::RED . "[Error] Can't find player $args[1]");
+                                        }else{
+                                            $this->setMaxHealth($player, 20, true);
+                                            $player->sendMessage(TextFormat::AQUA . "Your health has been restored to [20] points");
                                             if($player != $sender){
-                                                $sender->sendMessage(TextFormat::AQUA . "$args[2] now have [$amount] points of health");
+                                                if(substr($args[0], -1, 1) == "s"){
+                                                    $sender->sendMessage(TextFormat::AQUA . "$args[1]' health has been restored to [20] points");
+                                                }else{
+                                                    $sender->sendMessage(TextFormat::AQUA . "$args[1]'s health has been restored to [20] points");
+                                                }
                                             }
                                         }
                                     }
+                                }else{
+                                    $sender->sendMessage(TextFormat::RED . $command->getUsage());
                                 }
-                            }elseif($args[0] == "restore"){
-                                $sender->sendMessage(TextFormat::RED . "Usage: /morehealth restore <player>");
-                            }else{
-                                $sender->sendMessage(TextFormat::RED . $command->getUsage());
-                            }
-                            return true;
-                            break;
+                                return true;
+                                break;
+                            case 3:
+                                if($args[0] == "set"){
+                                    $amount = $args[1];
+                                    $player = $this->getPlayer($args[2]);
+                                    if(!$sender->hasPermission("morehealth.set.other")){
+                                        $sender->sendMessage(TextFormat::RED . $command->getPermissionMessage());
+                                    }else{
+                                        if($player == false){
+                                            $sender->sendMessage(TextFormat::RED . "[Error] Can't find player $args[2]");
+                                        }else{
+                                            if(!is_numeric($amount)){
+                                                $sender->sendMessage(TextFormat::YELLOW . "Invalid health amount, please use numbers");
+                                            }else{
+                                                $this->setMaxHealth($player, $amount, true);
+                                                $player->sendMessage(TextFormat::AQUA . "You now have [$amount] points of health");
+                                                if($player != $sender){
+                                                    $sender->sendMessage(TextFormat::AQUA . "$args[2] now have [$amount] points of health");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }elseif($args[0] == "restore"){
+                                    $sender->sendMessage(TextFormat::RED . "Usage: /morehealth restore <player>");
+                                }else{
+                                    $sender->sendMessage(TextFormat::RED . $command->getUsage());
+                                }
+                                return true;
+                                break;
+                        }
                     }
                 }
                 return true;
