@@ -1,0 +1,38 @@
+name: MoreHealth
+main: MoreHealth\Main
+version: 1.0.0
+api: [1.0.0]
+author: iksaku
+
+commands:
+    morehealth:
+        description: "Change the player max health"
+        usage: /morehealth <set|restore> [[amount]] [player]
+        permission: morehealth
+        aliases: ["moreh", "mhealth", "mh"]
+
+permissions:
+    morehealth:
+        default: op
+        description: "Change player's max health"
+        children:
+            morehealth.set:
+                default: op
+                description: "Change the health limit"
+                children:
+                    morehealth.set.use:
+                        default: op
+                        description: "Change your health"
+                    morehealth.set.other:
+                        default: op
+                        description: "Change another player's health"
+            morehealth.restore:
+                default: op
+                description: "Restore the health limit to 20"
+                children:
+                    morehealth.restore.use:
+                        default: op
+                        description: "Restore your health"
+                    morehealth.restore.other:
+                        default: op
+                        description: "Restore another player's health"
