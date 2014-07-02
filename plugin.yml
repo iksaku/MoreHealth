@@ -7,22 +7,22 @@ author: iksaku
 commands:
     morehealth:
         description: "Change the player max health"
-        usage: /morehealth <set|restore> [[hearts]] [player]
-        permission: morehealth.set.use;morehealth.set.other;morehealth.restore.use;morehealth.restore.other # Any one of them
+        usage: /morehealth <set|restore> [[amount]] [player]
+        permission: morehealth
         aliases: ["moreh", "mhealth", "mh"]
 
 permissions:
     morehealth:
         default: op
-        description: "Allow using /morehealth"
+        description: "Change player's max health"
         children:
             morehealth.set:
                 default: op
-                description: "Change the max health"
+                description: "Change the health limit"
                 children:
                     morehealth.set.use:
                         default: op
-                        description: "Change the command sender's health"
+                        description: "Change your health"
                     morehealth.set.other:
                         default: op
                         description: "Change another player's health"
