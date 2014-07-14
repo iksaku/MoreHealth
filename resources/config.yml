@@ -1,0 +1,2 @@
+#Set the default limit of health for new players
+ defaulthealth: 20
