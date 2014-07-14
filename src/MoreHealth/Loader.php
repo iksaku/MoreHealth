@@ -11,7 +11,9 @@ use pocketmine\utils\TextFormat;
 class Loader extends PluginBase implements Listener{
 
     public function onEnable(){
+        @mkdir("plugins/MoreHealth/");
         $this->saveDefaultConfig();
+        $this->getHealthConfig();
         $this->getDefaultHealth();
         $this->getServer()->getCommandMap()->register("morehealth", new MoreHealthCommand($this));
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
@@ -60,7 +62,7 @@ class Loader extends PluginBase implements Listener{
     }
 
     public function getHealthConfig(){
-        return new Config("plugins/MoreHealth/MoreHealth.yml", Config::DETECT);
+        return new Config("plugins/MoreHealth/MoreHealth.yml", Config::YAML);
     }
 
     public function getDefaultHealth(){
@@ -72,13 +74,14 @@ class Loader extends PluginBase implements Listener{
     }
 
     public function getMaxHealth(Player $player){
-        if(!$this->getHealthConfig()->exists($player->getName()) && is_numeric($this->getDefaultHealth())){
-            return $this->getDefaultHealth();
-        }elseif(is_numeric($this->getHealthConfig()->get($player->getName()))){
+        if($this->getHealthConfig()->exists($player->getName())){
             return $this->getHealthConfig()->get($player->getName());
-        }else{
-            return false;
         }
+        return $this->getDefaultHealth();
+    }
+
+    public function setDefaultHealth($amount){
+        $this->getHealthConfig()->set("defaulthealth", $amount);
     }
 
     public function setMaxHealth(Player $player, $amount, $save = false){
@@ -88,7 +91,7 @@ class Loader extends PluginBase implements Listener{
             $player->setMaxHealth($amount);
             $player->setHealth($player->getMaxHealth());
             if($save == true){
-                if($amount == 20){
+                if($amount == $this->getDefaultHealth()){
                     $this->removeMaxHealth($player);
                 }else{
                     $this->saveMaxHealth($player, $amount);

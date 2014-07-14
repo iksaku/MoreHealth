@@ -29,6 +29,10 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                 switch(count($args)){
                     case 1:
                         switch($args[0]){
+                            case "setdefault":
+                                $sender->sendMessage(TextFormat::RED . "Please specify an amount: /morehealth setdefault <amount>");
+                                return true;
+                                break;
                             case "set":
                                 if(!$sender instanceof Player){
                                     $sender->sendMessage(TextFormat::RED . "Please specify an amount and a player: /morehealth set <amount> <player>");
@@ -54,6 +58,16 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                         break;
                     case 2:
                         switch($args[0]){
+                            case "setdefault":
+                                $amount = $args[1];
+                                if(!is_numeric($amount)){
+                                    $sender->sendMessage(TextFormat::YELLOW . "Invalid health amount, please use numbers");
+                                }else{
+                                    $this->plugin->setDefaultHealth($amount);
+                                    $sender->sendMessage(TextFormat::AQUA . "Successfully changed the default health limit.");
+                                }
+                                return true;
+                                break;
                             case "set":
                                 if(!$sender instanceof Player){
                                     $sender->sendMessage(TextFormat::RED . "Please specify a player: /morehealth set <amount> <player>");
@@ -97,6 +111,9 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                         break;
                     case 3:
                         switch($args[0]){
+                            case "setdefault":
+                                $sender->sendMessage(TextFormat::RED . "Usage: /morehealth setdefault <amount>");
+                                return true;
                             case "set":
                                 if(!$sender->hasPermission("morehealth.set.other")){
                                     $sender->sendMessage(TextFormat::RED . $this->getPermissionMessage());
