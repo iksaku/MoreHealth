@@ -9,10 +9,12 @@ use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 
 class Loader extends PluginBase implements Listener{
+    /** @var  Config */
+    public $health;
 
     public function onEnable(){
         @mkdir("plugins/MoreHealth/");
-        $this->getHealthConfig();
+        $this->health = new Config("plugins/MoreHealth/MoreHealth.yml", Config::YAML);
         $this->getDefaultHealth();
         $this->getServer()->getCommandMap()->register("morehealth", new MoreHealthCommand($this));
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
@@ -20,7 +22,7 @@ class Loader extends PluginBase implements Listener{
 
     public function onDisable(){
         $this->getConfig()->save();
-        $this->getHealthConfig()->save();
+        $this->health->save();
     }
 
     /**
@@ -60,30 +62,30 @@ class Loader extends PluginBase implements Listener{
         }
     }
 
-    public function getHealthConfig(){
-        return new Config("plugins/MoreHealth/MoreHealth.yml", Config::YAML);
-    }
-
     public function getDefaultHealth(){
-        if(!file_exists("plugins/MoreHealth/config.yml")){
-            $this->saveDefaultConfig();
+        if(!$this->health->get("defaulthealth")){
+            $this->health->set("defaulthealth", 20);
         }
-        if(!is_numeric($this->getConfig()->get("defaulthealth"))){
-            $this->getLogger()->error(TextFormat::RED . "[MoreHealth] Invalid value for \"defaulthealth\" in plugins/MoreHealth/config.yml");
+        if(!is_numeric($this->health->get("defaulthealth"))){
+            $this->getLogger()->error(TextFormat::RED . "[MoreHealth] Invalid value for \"defaulthealth\" in \"plugins/MoreHealth/config.yml\"");
             return false;
         }
-        return $this->getConfig()->get("defaulthealth");
-    }
-
-    public function getMaxHealth(Player $player){
-        if($this->getHealthConfig()->exists($player->getName())){
-            return $this->getHealthConfig()->get($player->getName());
-        }
-        return $this->getDefaultHealth();
+        return $this->health->get("defaulthealth");
     }
 
     public function setDefaultHealth($amount){
-        $this->getHealthConfig()->set("defaulthealth", $amount);
+        if(!is_numeric($amount)){
+            return false;
+        }
+        $this->health->set("defaulthealth", $amount);
+        return true;
+    }
+
+    public function getMaxHealth(Player $player){
+        if(!$this->health->exists($player->getName())){
+            return $this->getDefaultHealth();
+        }
+        return $this->health->get($player->getName());
     }
 
     public function setMaxHealth(Player $player, $amount, $save = false){
@@ -91,7 +93,7 @@ class Loader extends PluginBase implements Listener{
             return false;
         }else{
             $player->setMaxHealth($amount);
-            $player->setHealth($player->getMaxHealth());
+            $player->heal($player->getMaxHealth());
             if($save == true){
                 if($amount == $this->getDefaultHealth()){
                     $this->removeMaxHealth($player);
@@ -104,11 +106,11 @@ class Loader extends PluginBase implements Listener{
     }
 
     public function removeMaxHealth(Player $player){
-        if(!$this->getHealthConfig()->exists($player->getName())){
+        if(!$this->health->exists($player->getName())){
             return false;
         }else{
-            $this->getHealthConfig()->remove($player->getName());
-            $this->getHealthConfig()->save();
+            $this->health->remove($player->getName());
+            $this->health->save();
             return true;
         }
     }
@@ -117,8 +119,8 @@ class Loader extends PluginBase implements Listener{
         if(!is_numeric($amount)){
             return false;
         }else{
-            $this->getHealthConfig()->set($player->getName(), $amount);
-            $this->getHealthConfig()->save();
+            $this->health->set($player->getName(), $amount);
+            $this->health->save();
             return true;
         }
     }
