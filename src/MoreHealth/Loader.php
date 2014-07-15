@@ -12,7 +12,6 @@ class Loader extends PluginBase implements Listener{
 
     public function onEnable(){
         @mkdir("plugins/MoreHealth/");
-        $this->saveDefaultConfig();
         $this->getHealthConfig();
         $this->getDefaultHealth();
         $this->getServer()->getCommandMap()->register("morehealth", new MoreHealthCommand($this));
@@ -66,6 +65,9 @@ class Loader extends PluginBase implements Listener{
     }
 
     public function getDefaultHealth(){
+        if(!file_exists("plugins/MoreHealth/config.yml")){
+            $this->saveDefaultConfig();
+        }
         if(!is_numeric($this->getConfig()->get("defaulthealth"))){
             $this->getLogger()->error(TextFormat::RED . "[MoreHealth] Invalid value for \"defaulthealth\" in plugins/MoreHealth/config.yml");
             return false;
