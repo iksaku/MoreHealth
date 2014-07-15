@@ -63,7 +63,7 @@ class Loader extends PluginBase implements Listener{
     }
 
     public function getDefaultHealth(){
-        if(!$this->health->get("defaulthealth")){
+        if(!$this->health->exists("defaulthealth")){
             $this->health->set("defaulthealth", 20);
         }
         if(!is_numeric($this->health->get("defaulthealth"))){
