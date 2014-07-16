@@ -21,8 +21,9 @@ class Loader extends PluginBase implements Listener{
     }
 
     public function onDisable(){
-        $this->getConfig()->save();
-        $this->health->save();
+        foreach($this->getServer()->getOnlinePlayers() as $p){
+            $this->setMaxHealth($p, 20);
+        }
     }
 
     /**
