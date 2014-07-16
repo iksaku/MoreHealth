@@ -10,6 +10,9 @@ permissions:
         default: op
         description: "Change player's max health"
         children:
+            morehealth.setdefault:
+                default: op
+                description: "Modify the default health limit"
             morehealth.set:
                 default: op
                 description: "Change the health limit"
