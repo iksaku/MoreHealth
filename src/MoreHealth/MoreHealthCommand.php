@@ -11,7 +11,7 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
     public $plugin;
 
     public function __construct(Loader $plugin){
-        parent::__construct("morehealth", "Change the player max health", "/morehealth <set|restore>", ["moreh", "mhealth", "mh"]);
+        parent::__construct("morehealth", "Change the player max health", "/morehealth <setdefault|set|restore>", ["moreh", "mhealth", "mh"]);
         $this->setPermission("morehealth");
         $this->plugin = $plugin;
     }
@@ -24,7 +24,7 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
             $sender->sendMessage(TextFormat::RED . $this->getUsage());
             return false;
         }
-        if(!$sender->hasPermission("morehealth.set") || !$sender->hasPermission("morehealth.restore")){
+        if(!$sender->hasPermission("morehealth.setdefault") || !$sender->hasPermission("morehealth.set") || !$sender->hasPermission("morehealth.restore")){
             $sender->sendMessage(TextFormat::RED . $this->getPermissionMessage());
             return false;
         }
@@ -51,6 +51,15 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                         }
                         return true;
                         break;
+                    case "restoredefault":
+                        if(!$sender->hasPermission("morehealth.restoredefault")){
+                            $sender->sendMessage(TextFormat::RED . $this->getPermissionMessage());
+                            return false;
+                        }
+                        $this->plugin->setDefaultHealth(20);
+                        $sender->sendMessage(TextFormat::AQUA . "Successfully restored the default health limit to 20");
+                        return true;
+                        break;
                     case "restore":
                         if(!$sender->hasPermission("morehealth.restore.use")){
                             $sender->sendMessage(TextFormat::RED . $this->getPermissionMessage());
@@ -59,8 +68,8 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                         if(!$sender instanceof Player){
                             $sender->sendMessage(TextFormat::RED . "Please specify a player: /morehealth restore <player>");
                         }else{
-                            $this->plugin->setMaxHealth($sender, 20, true);
-                            $sender->sendMessage(TextFormat::AQUA . "Your health has been restored to [20] points");
+                            $this->plugin->setMaxHealth($sender, $this->plugin->getDefaultHealth(), true);
+                            $sender->sendMessage(TextFormat::AQUA . "Your health has been restored to [" . $this->plugin->getDefaultHealth() . "] points");
                         }
                         return true;
                         break;
@@ -82,7 +91,7 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                             $sender->sendMessage(TextFormat::YELLOW . "Invalid health amount, please use numbers");
                         }else{
                             $this->plugin->setDefaultHealth($amount);
-                            $sender->sendMessage(TextFormat::AQUA . "Successfully changed the default health limit.");
+                            $sender->sendMessage(TextFormat::AQUA . "Successfully changed the default health limit to $amount");
                         }
                         return true;
                         break;
@@ -104,6 +113,14 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                         }
                         return true;
                         break;
+                    case "restoredefault":
+                        if(!$sender->hasPermission("morehealth.restoredefault")){
+                            $sender->sendMessage(TextFormat::RED . $this->getPermissionMessage());
+                            return false;
+                        }
+                        $sender->sendMessage(TextFormat::RED . "Usage: " . $this->getUsage());
+                        return true;
+                        break;
                     case "restore":
                         if(!$sender->hasPermission("morehealth.restore.use")){
                             $sender->sendMessage(TextFormat::RED . $this->getPermissionMessage());
@@ -116,13 +133,13 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                             if($player == false){
                                 $sender->sendMessage(TextFormat::RED . "[Error] Can't find player $args[1]");
                             }else{
-                                $this->plugin->setMaxHealth($player, 20, true);
-                                $player->sendMessage(TextFormat::AQUA . "Your health has been restored to [20] points");
+                                $this->plugin->setMaxHealth($player, $this->plugin->getDefaultHealth(), true);
+                                $player->sendMessage(TextFormat::AQUA . "Your health has been restored to [" . $this->plugin->getDefaultHealth() . "] points");
                                 if($player != $sender){
                                     if(substr($args[0], -1, 1) == "s"){
-                                        $sender->sendMessage(TextFormat::AQUA . "$args[1]' health has been restored to [20] points");
+                                        $sender->sendMessage(TextFormat::AQUA . "$args[1]' health has been restored to [" . $this->plugin->getDefaultHealth() . "] points");
                                     }else{
-                                        $sender->sendMessage(TextFormat::AQUA . "$args[1]'s health has been restored to [20] points");
+                                        $sender->sendMessage(TextFormat::AQUA . "$args[1]'s health has been restored to [" . $this->plugin->getDefaultHealth() . "] points");
                                     }
                                 }
                             }
@@ -163,6 +180,14 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                                 }
                             }
                         }
+                        return true;
+                        break;
+                    case "restoredefault":
+                        if(!$sender->hasPermission("morehealth.restoredefault")){
+                            $sender->sendMessage(TextFormat::RED . $this->getPermissionMessage());
+                            return false;
+                        }
+                        $sender->sendMessage(TextFormat::RED . "Usage: " . $this->getUsage());
                         return true;
                         break;
                     case "restore":

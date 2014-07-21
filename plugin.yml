@@ -1,6 +1,6 @@
 name: MoreHealth
 main: MoreHealth\Loader
-version: 1.0.1
+version: 1.0.2
 api: 1.0.0
 author: iksaku
 website: https://github.com/LegendOfMCPE/MoreHealth
@@ -12,7 +12,7 @@ permissions:
         children:
             morehealth.setdefault:
                 default: op
-                description: "Modify the default health limit"
+                description: "Modify the default health limit in MoreHealth.yml"
             morehealth.set:
                 default: op
                 description: "Change the health limit"
@@ -23,9 +23,12 @@ permissions:
                     morehealth.set.other:
                         default: op
                         description: "Change another player's health"
+            morehealth.restoredefault:
+                default: op
+                description: "Restore the default health limit to 20 in MoreHealth.yml"
             morehealth.restore:
                 default: op
-                description: "Restore the health limit to 20"
+                description: "Restore the health limit to the default specified in MoreHealth.yml"
                 children:
                     morehealth.restore.use:
                         default: op

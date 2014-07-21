@@ -79,6 +79,7 @@ class Loader extends PluginBase implements Listener{
             return false;
         }
         $this->health->set("defaulthealth", $amount);
+        $this->health->save();
         return true;
     }
 
