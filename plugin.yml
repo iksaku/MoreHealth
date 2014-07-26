@@ -3,7 +3,7 @@ main: MoreHealth\Loader
 version: 1.0.2
 api: 1.0.0
 author: iksaku
-website: https://github.com/LegendOfMCPE/MoreHealth
+website: https://github.com/iksaku/MoreHealth
 
 permissions:
     morehealth:
