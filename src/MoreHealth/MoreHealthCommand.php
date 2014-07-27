@@ -68,7 +68,7 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                         if(!$sender instanceof Player){
                             $sender->sendMessage(TextFormat::RED . "Please specify a player: /morehealth restore <player>");
                         }else{
-                            $this->plugin->setMaxHealth($sender, $this->plugin->getDefaultHealth(), true);
+                            $this->plugin->setPlayerMaxHealth($sender, $this->plugin->getDefaultHealth(), true);
                             $sender->sendMessage(TextFormat::AQUA . "Your health has been restored to [" . $this->plugin->getDefaultHealth() . "] points");
                         }
                         return true;
@@ -107,7 +107,7 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                             if(!is_numeric($amount)){
                                 $sender->sendMessage(TextFormat::YELLOW . "Invalid health amount, please use numbers");
                             }else{
-                                $this->plugin->setMaxHealth($sender, $amount, true);
+                                $this->plugin->setPlayerMaxHealth($sender, $amount, true);
                                 $sender->sendMessage(TextFormat::AQUA . "You now have [$amount] points of health");
                             }
                         }
@@ -133,7 +133,7 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                             if($player == false){
                                 $sender->sendMessage(TextFormat::RED . "[Error] Can't find player $args[1]");
                             }else{
-                                $this->plugin->setMaxHealth($player, $this->plugin->getDefaultHealth(), true);
+                                $this->plugin->setPlayerMaxHealth($player, $this->plugin->getDefaultHealth(), true);
                                 $player->sendMessage(TextFormat::AQUA . "Your health has been restored to [" . $this->plugin->getDefaultHealth() . "] points");
                                 if($player != $sender){
                                     if(substr($args[0], -1, 1) == "s"){
@@ -173,7 +173,7 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                             if(!is_numeric($amount)){
                                 $sender->sendMessage(TextFormat::YELLOW . "Invalid health amount, please use numbers");
                             }else{
-                                $this->plugin->setMaxHealth($player, $amount, true);
+                                $this->plugin->setPlayerMaxHealth($player, $amount, true);
                                 $player->sendMessage(TextFormat::AQUA . "You now have [$amount] points of health");
                                 if($player != $sender){
                                     $sender->sendMessage(TextFormat::AQUA . "$args[2] now have [$amount] points of health");
