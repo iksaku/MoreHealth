@@ -20,9 +20,15 @@ class Loader extends PluginBase implements Listener{
 
     public function onEnable(){
         @mkdir($this->getDataFolder());
+        $this->saveDefaultConfig();
+
         $this->getServer()->getCommandMap()->register("morehealth", new MoreHealthCommand($this));
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-        $this->saveDefaultConfig();
+
+        foreach($this->getServer()->getOnlinePlayers() as $p){
+            $p->setMaxHealth($this->getPlayerMaxHealth($p));
+        }
+
         switch(strtolower($this->getConfig()->get("database"))){
             case "yaml":
                 $this->db = new YAMLDataProvider($this);
@@ -35,9 +41,6 @@ class Loader extends PluginBase implements Listener{
                 $this->getServer()->getPluginManager()->disablePlugin($this);
                 $this->setEnabled(false);
                 break;
-        }
-        foreach($this->getServer()->getOnlinePlayers() as $p){
-            $p->setMaxHealth($this->getPlayerMaxHealth($p));
         }
     }
 
