@@ -71,24 +71,11 @@ class SQLite3DataProvider implements DataProvider{
 
     public function savePlayerMaxHealth(Player $player, $amount){
         $name = trim(strtolower($player->getName()));
-        $prepare = $this->db->prepare("SELECT * FROM players WHERE name = :name");
-        $prepare->bindValue(":name", $name, SQLITE3_TEXT);
-        $r = $prepare->execute();
-
-        //If player exists in the DB:
-        if($r instanceof \SQLite3Result){
-            $update = $this->db->prepare("UPDATE players SET health = :health WHERE name = :name");
-            $update->bindValue(":name", $name, SQLITE3_TEXT);
-            $update->bindValue(":health", $amount, SQLITE3_INTEGER);
-            $update->execute();
-            return true;
+        if($this->getPlayerMaxHealth($player) !== $this->plugin->getDefaultHealth()){
+            $prepare = $this->db->prepare("UPDATE players SET health = :health WHERE name = :name");
+            $prepare->bindValue(":name", $name, SQLITE3_TEXT);
+            $prepare->bindValue(":health", $amount, SQLITE3_INTEGER);
+            $prepare->execute();
         }
-
-        //If player doesn't exist in the DB:
-        $prepare = $this->db->prepare("INSERT INTO players (name, health) VALUES (:name, :health)");
-        $prepare->bindValue(":name", $name, SQLITE3_TEXT);
-        $prepare->bindValue(":health", $amount, SQL_NUMERIC);
-        $prepare->execute();
-        return true;
     }
 } 
