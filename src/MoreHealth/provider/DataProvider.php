@@ -21,20 +21,22 @@ interface DataProvider {
      * @param Player $player
      * @param int $amount
      * @param bool $save
-     * @return mixed
+     * @return bool
      */
     public function setPlayerMaxHealth(Player $player, $amount, $save = false);
 
     /**
      * @param Player $player
-     * @return mixed
+     * @return bool
      */
     public function restorePlayerMaxHealth(Player $player);
 
     /**
      * @param Player $player
      * @param int $amount
-     * @return mixed
+     * @return bool
      */
     public function savePlayerMaxHealth(Player $player, $amount);
+
+    public function close();
 } 

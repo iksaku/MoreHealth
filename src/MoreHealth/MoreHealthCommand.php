@@ -30,7 +30,7 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
         }
         switch(count($args)){
             case 1:
-                switch($args[0]){
+                switch(strtolower($args[0])){
                     case "setdefault":
                         if(!$sender->hasPermission("morehealth.setdefault")){
                             $sender->sendMessage(TextFormat::RED . $this->getPermissionMessage());
@@ -80,7 +80,7 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                 return true;
                 break;
             case 2:
-                switch($args[0]){
+                switch(strtolower($args[0])){
                     case "setdefault":
                         if(!$sender->hasPermission("morehealth.setdefault")){
                             $sender->sendMessage(TextFormat::RED . $this->getPermissionMessage());
@@ -153,7 +153,7 @@ class MoreHealthCommand extends Command implements PluginIdentifiableCommand{
                 return true;
                 break;
             case 3:
-                switch($args[0]){
+                switch(strtolower($args[0])){
                     case "setdefault":
                         if(!$sender->hasPermission("morehealth.setdefault")){
                             $sender->sendMessage(TextFormat::RED . $this->getPermissionMessage());

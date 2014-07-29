@@ -13,7 +13,7 @@ use pocketmine\utils\TextFormat;
 
 class Loader extends PluginBase implements Listener{
     /** @var  DataProvider */
-    protected $db;
+    protected $provider;
 
     /** @var  Config */
     public $health;
@@ -31,11 +31,11 @@ class Loader extends PluginBase implements Listener{
 
         switch(strtolower($this->getConfig()->get("database"))){
             case "yaml":
-                $this->db = new YAMLDataProvider($this);
+                $this->provider = new YAMLDataProvider($this);
                 break;
-            case "sqlite3":
-                $this->db = new SQLite3DataProvider($this); //TODO
-                break;
+            /*case "sqlite3":
+                $this->provider = new SQLite3DataProvider($this); //TODO
+                break;*/
             default:
                 $this->getLogger()->error(TextFormat::RED . "Unknown Database provided on \"plugins/MoreHealth/config.yml\", MoreHealth will be disabled");
                 $this->getServer()->getPluginManager()->disablePlugin($this);
@@ -125,7 +125,7 @@ class Loader extends PluginBase implements Listener{
      * @return mixed
      */
     public function getPlayerMaxHealth(Player $player){
-        return $this->db->getPlayerMaxHealth($player);
+        return $this->provider->getPlayerMaxHealth($player);
     }
 
     /**
@@ -136,7 +136,7 @@ class Loader extends PluginBase implements Listener{
      * @param bool $save
      */
     public function setPlayerMaxHealth(Player $player, $amount, $save = false){
-        $this->db->setPlayerMaxHealth($player, $amount, $save);
+        $this->provider->setPlayerMaxHealth($player, $amount, $save);
     }
 
     /**
@@ -145,6 +145,6 @@ class Loader extends PluginBase implements Listener{
      * @param Player $player
      */
     public function restorePlayerMaxHealth(Player $player){
-        $this->db->restorePlayerMaxHealth($player);
+        $this->provider->restorePlayerMaxHealth($player);
     }
 }

@@ -9,22 +9,22 @@ class SQLite3DataProvider implements DataProvider{
     protected $plugin;
 
     /** @var \SQLite3  */
-    protected $db;
+    protected $database;
 
     public function __construct(Loader $plugin){
         $this->plugin = $plugin;
         if(!file_exists($this->plugin->getDataFolder() . "healths.db")){
-            $this->db = new \SQLite3($this->plugin->getDataFolder() . "healths.db", SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE); //Only work with ":memory:" as path? :/
+            $this->database = new \SQLite3($this->plugin->getDataFolder() . "healths.db", SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE); //Only work with ":memory:" as path? :/
             $resources = $this->plugin->getResource("sqlite3.sql");
-            $this->db->exec(stream_get_contents($resources));
+            $this->database->exec(stream_get_contents($resources));
         }else{
-            $this->db = new \SQLite3($this->plugin->getDataFolder() . "healths.db", SQLITE3_OPEN_READWRITE);
+            $this->database = new \SQLite3($this->plugin->getDataFolder() . "healths.db", SQLITE3_OPEN_READWRITE);
         }
     }
 
     public function getPlayerMaxHealth(Player $player){
         $name = trim(strtolower($player->getName()));
-        $prepare = $this->db->prepare("SELECT * FROM players WHERE name = :name");
+        $prepare = $this->database->prepare("SELECT * FROM players WHERE name = :name");
         $prepare->bindValue(":name", $name, SQLITE3_TEXT);
         $r = $prepare->execute();
 
@@ -63,19 +63,25 @@ class SQLite3DataProvider implements DataProvider{
     public function restorePlayerMaxHealth(Player $player){
         $name = trim(strtolower($player->getName()));
         if($this->getPlayerMaxHealth($player) !== $this->plugin->getDefaultHealth()){
-            $prepare = $this->db->prepare("DELETE FROM players WHERE name = :name");
+            $prepare = $this->database->prepare("DELETE FROM players WHERE name = :name");
             $prepare->bindValue(":name", $name, SQLITE3_TEXT);
             $prepare->execute();
         }
+        return true;
     }
 
     public function savePlayerMaxHealth(Player $player, $amount){
         $name = trim(strtolower($player->getName()));
         if($this->getPlayerMaxHealth($player) !== $this->plugin->getDefaultHealth()){
-            $prepare = $this->db->prepare("UPDATE players SET health = :health WHERE name = :name");
+            $prepare = $this->database->prepare("UPDATE players SET health = :health WHERE name = :name");
             $prepare->bindValue(":name", $name, SQLITE3_TEXT);
             $prepare->bindValue(":health", $amount, SQLITE3_INTEGER);
             $prepare->execute();
         }
+        return true;
+    }
+
+    public function close(){
+        $this->database->close();
     }
 } 

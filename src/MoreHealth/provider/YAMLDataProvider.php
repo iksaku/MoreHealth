@@ -10,18 +10,18 @@ class YAMLDataProvider implements DataProvider{
     protected $plugin;
 
     /** @var Config  */
-    protected $db;
+    protected $database;
 
     public function __construct(Loader $plugin){
         $this->plugin = $plugin;
-        $this->db = new Config($plugin->getDataFolder() . "healths.yml", Config::YAML);
+        $this->database = new Config($plugin->getDataFolder() . "healths.yml", Config::YAML);
     }
 
     public function getPlayerMaxHealth(Player $player){
-        if(!$this->db->exists($player->getName())){
+        if(!$this->database->exists($player->getName())){
             return $this->plugin->getDefaultHealth();
         }
-        return $this->db->get($player->getName());
+        return $this->database->get($player->getName());
     }
 
     public function setPlayerMaxHealth(Player $player, $amount, $save = false){
@@ -41,11 +41,11 @@ class YAMLDataProvider implements DataProvider{
     }
 
     public function restorePlayerMaxHealth(Player $player){
-        if(!$this->db->exists($player->getName())){
+        if(!$this->database->exists($player->getName())){
             return false;
         }
-        $this->db->remove(strtolower($player->getName()));
-        $this->db->save();
+        $this->database->remove(strtolower($player->getName()));
+        $this->database->save();
         return true;
     }
 
@@ -53,8 +53,10 @@ class YAMLDataProvider implements DataProvider{
         if(!is_numeric($amount)){
             return false;
         }
-        $this->db->set(strtolower($player->getName()), $amount);
-        $this->db->save();
+        $this->database->set(strtolower($player->getName()), $amount);
+        $this->database->save();
         return true;
     }
+
+    public function close(){}
 } 
