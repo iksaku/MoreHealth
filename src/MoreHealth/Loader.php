@@ -33,9 +33,9 @@ class Loader extends PluginBase implements Listener{
             case "yaml":
                 $this->provider = new YAMLDataProvider($this);
                 break;
-            /*case "sqlite3":
+            case "sqlite3":
                 $this->provider = new SQLite3DataProvider($this); //TODO
-                break;*/
+                break;
             default:
                 $this->getLogger()->error(TextFormat::RED . "Unknown Database provided on \"plugins/MoreHealth/config.yml\", MoreHealth will be disabled");
                 $this->getServer()->getPluginManager()->disablePlugin($this);
