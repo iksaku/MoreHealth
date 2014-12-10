@@ -140,7 +140,7 @@ class Loader extends PluginBase implements Listener{
      */
     private function savePlayerMaxHealth(Player $player, $amount){
         $this->database->set($player->getName(), $amount);
-        if($amount === $this->getDefaultHealth()){
+        if($amount == $this->getDefaultHealth()){
             $this->database->remove($player->getName());
         }
         $this->database->save();
