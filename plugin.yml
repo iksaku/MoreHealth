@@ -1,7 +1,7 @@
 name: MoreHealth
 main: MoreHealth\Loader
-version: 1.0.2
-api: 1.0.0
+version: 1.0.3
+api: 1.9.0
 author: iksaku
 website: https://github.com/iksaku/MoreHealth
 
@@ -17,9 +17,6 @@ permissions:
                 default: op
                 description: "Change the health limit"
                 children:
-                    morehealth.set.use:
-                        default: op
-                        description: "Change your health"
                     morehealth.set.other:
                         default: op
                         description: "Change another player's health"
@@ -30,9 +27,6 @@ permissions:
                 default: op
                 description: "Restore the health limit to the default specified in MoreHealth.yml"
                 children:
-                    morehealth.restore.use:
-                        default: op
-                        description: "Restore your health"
                     morehealth.restore.other:
                         default: op
                         description: "Restore another player's health"

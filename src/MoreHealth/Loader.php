@@ -12,35 +12,23 @@ use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 
 class Loader extends PluginBase implements Listener{
-    /** @var  DataProvider */
-    protected $provider;
-
     /** @var  Config */
-    public $health;
+    protected $database;
 
     public function onEnable(){
         @mkdir($this->getDataFolder());
-        $this->saveDefaultConfig();
+
+        $this->database = new Config($this->getDataFolder() . "Health.yml", Config::YAML);
+        if(!$this->database->exists("defaulthealth") || !is_numeric($this->database->get("defaulthealth"))){
+            $this->database->set("defaulthealth", 20);
+            $this->database->save();
+        }
 
         $this->getServer()->getCommandMap()->register("morehealth", new MoreHealthCommand($this));
-        $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        $this->getServer()->getPluginManager()->registerEvents(new EventHandler($this), $this);
 
         foreach($this->getServer()->getOnlinePlayers() as $p){
             $p->setMaxHealth($this->getPlayerMaxHealth($p));
-        }
-
-        switch(strtolower($this->getConfig()->get("database"))){
-            case "yaml":
-                $this->provider = new YAMLDataProvider($this);
-                break;
-            case "sqlite3":
-                $this->provider = new SQLite3DataProvider($this); //TODO
-                break;
-            default:
-                $this->getLogger()->error(TextFormat::RED . "Unknown Database provided on \"plugins/MoreHealth/config.yml\", MoreHealth will be disabled");
-                $this->getServer()->getPluginManager()->disablePlugin($this);
-                $this->setEnabled(false);
-                break;
         }
     }
 
@@ -48,14 +36,6 @@ class Loader extends PluginBase implements Listener{
         foreach($this->getServer()->getOnlinePlayers() as $p){
             $p->setMaxHealth(20);
         }
-    }
-
-    /**
-     * @param PlayerLoginEvent $event
-     */
-    public function onPlayerLogin(PlayerLoginEvent $event){
-        $player = $event->getPlayer();
-        $this->setPlayerMaxHealth($player, $this->getPlayerMaxHealth($player));
     }
 
     /*
@@ -93,27 +73,28 @@ class Loader extends PluginBase implements Listener{
     /**
      * Return the default health specified in the config
      *
-     * @return bool|mixed
+     * @return bool|int
      */
     public function getDefaultHealth(){
-        if(!$this->getConfig()->exists("defaulthealth") || !is_numeric($this->getConfig()->get("defaulthealth"))){
-            $this->getConfig()->set("defaulthealth", 20);
+        if(!$this->database->exists("defaulthealth") || !is_numeric($this->database->get("defaulthealth"))){
+            $this->database->set("defaulthealth", 20);
+            $this->database->save();
         }
-        return $this->getConfig()->get("defaulthealth");
+        return $this->database->get("defaulthealth");
     }
 
     /**
      * Modify the default health for players (saved in config)
      *
-     * @param $amount
+     * @param int $amount
      * @return bool
      */
     public function setDefaultHealth($amount){
         if(!is_numeric($amount)){
             return false;
         }
-        $this->getConfig()->set("defaulthealth", $amount);
-        $this->getConfig()->save();
+        $this->database->set("defaulthealth", $amount);
+        $this->database->save();
         return true;
     }
 
@@ -122,29 +103,46 @@ class Loader extends PluginBase implements Listener{
      * else it will return the default health limit
      *
      * @param Player $player
-     * @return mixed
+     * @return int
      */
     public function getPlayerMaxHealth(Player $player){
-        return $this->provider->getPlayerMaxHealth($player);
+        if(!$this->database->exists($player->getName())){
+            return $this->getDefaultHealth();
+        }
+        return $this->database->get($player->getName());
     }
 
     /**
      * Modify player's health limit
      *
      * @param Player $player
-     * @param $amount
+     * @param int $amount
      * @param bool $save
+     * @return bool
      */
     public function setPlayerMaxHealth(Player $player, $amount, $save = false){
-        $this->provider->setPlayerMaxHealth($player, $amount, $save);
+        if(!is_numeric($amount)){
+            return false;
+        }
+        $player->setMaxHealth($amount);
+        $player->heal($amount);
+        if($save === true){
+            $this->savePlayerMaxHealth($player, $amount);
+        }
+        return true;
     }
 
     /**
-     * Restore player's health to the default in config
+     * Saves the health options
      *
      * @param Player $player
+     * @param int $amount
      */
-    public function restorePlayerMaxHealth(Player $player){
-        $this->provider->restorePlayerMaxHealth($player);
+    private function savePlayerMaxHealth(Player $player, $amount){
+        $this->database->set($player->getName(), $amount);
+        if($amount === $this->getDefaultHealth()){
+            $this->database->remove($player->getName());
+        }
+        $this->database->save();
     }
 }
